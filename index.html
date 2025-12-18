@@ -1,21 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Instant Earn</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <title>Quick Earn BD</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Telegram WebApp -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- Monetag SDK -->
+  <script src="https://telegram.monetag.com/tg.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f6f7fb;
+      text-align: center;
+      padding: 30px;
+    }
+    h1 {
+      margin-top: 40px;
+    }
+    button {
+      background: #6c63ff;
+      color: #fff;
+      border: none;
+      padding: 14px 22px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    #status {
+      margin-top: 20px;
+      font-size: 15px;
+    }
+  </style>
 </head>
+
 <body>
+  <h1>💰 Quick Earn BD</h1>
+  <p>Watch ads & earn real money</p>
 
-<h2>💰 Instant Earn</h2>
-<p>Watch ads & earn real money</p>
+  <button onclick="watchAd()">▶ Start Watching Ads</button>
 
-<button onclick="watchAd()">▶ Start Watching Ads</button>
+  <p id="status"></p>
 
-<p id="status"></p>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
