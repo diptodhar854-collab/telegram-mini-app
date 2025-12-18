@@ -3,49 +3,88 @@
 <head>
   <meta charset="UTF-8" />
   <title>Quick Earn BD</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Telegram WebApp -->
+  <!-- Telegram Mini App -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- Monetag SDK -->
-  <script src="https://telegram.monetag.com/tg.js"></script>
+  <!-- Monetag SDK (required) -->
+  <script src="https://cdn.monetag.com/ads.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #f6f7fb;
       text-align: center;
-      padding: 30px;
+      padding: 40px 15px;
     }
     h1 {
-      margin-top: 40px;
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+    p {
+      color: #555;
+      margin-bottom: 25px;
     }
     button {
       background: #6c63ff;
       color: #fff;
       border: none;
-      padding: 14px 22px;
-      font-size: 16px;
-      border-radius: 8px;
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 10px;
       cursor: pointer;
-      margin-top: 20px;
     }
     #status {
       margin-top: 20px;
-      font-size: 15px;
+      font-size: 16px;
     }
   </style>
 </head>
 
 <body>
+
   <h1>💰 Quick Earn BD</h1>
   <p>Watch ads & earn real money</p>
 
   <button onclick="watchAd()">▶ Start Watching Ads</button>
 
-  <p id="status"></p>
+  <div id="status"></div>
 
-  <script src="script.js"></script>
+  <script>
+    let lastAdTime = 0;
+    const COOLDOWN = 60 * 60 * 1000; // 1 hour
+
+    function watchAd() {
+      const now = Date.now();
+
+      if (now - lastAdTime < COOLDOWN) {
+        document.getElementById("status").innerText =
+          "⏳ Please wait before watching next ad.";
+        return;
+      }
+
+      if (typeof window.showMonetagAd !== "function") {
+        document.getElementById("status").innerText =
+          "❌ Ad not ready. Try again later.";
+        return;
+      }
+
+      window.showMonetagAd({
+        adUnitId: "PASTE_YOUR_MONETAG_AD_UNIT_ID_HERE",
+        onComplete: () => {
+          lastAdTime = Date.now();
+          document.getElementById("status").innerText =
+            "✅ Ad completed! Reward added.";
+        },
+        onError: () => {
+          document.getElementById("status").innerText =
+            "❌ Ad failed. Try again later.";
+        }
+      });
+    }
+  </script>
+
 </body>
 </html>
