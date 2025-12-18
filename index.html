@@ -10,18 +10,18 @@
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,Arial,sans-serif;background:#f2f4fa}
+body{margin:0;font-family:Arial;background:#f2f4fa}
 .page{display:none;padding:90px 20px 120px}
 .page.active{display:block}
 .card{background:#fff;border-radius:18px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
-.btn{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,#6c63ff,#8a7cff);color:#fff;font-weight:600}
+.btn{width:100%;padding:16px;border:none;border-radius:14px;background:#6c63ff;color:#fff;font-weight:600}
 input{width:100%;padding:14px;border-radius:12px;border:1px solid #ccc}
 .center{min-height:60vh;display:flex;align-items:center;justify-content:center}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:1px solid #ddd}
 .nav-item{flex:1;text-align:center;padding:10px 0;font-size:12px;color:#777}
 .nav-item span{display:block;font-size:20px}
 .nav-item.active{color:#6c63ff;font-weight:600}
-.hero{background:linear-gradient(135deg,#6c63ff,#8a7cff);color:#fff;border-radius:20px;padding:26px;margin-bottom:25px}
+.hero{background:#6c63ff;color:#fff;border-radius:20px;padding:26px;margin-bottom:25px}
 .stats{display:flex;gap:12px;margin-top:14px}
 .stat{flex:1;background:#fff;color:#333;border-radius:14px;padding:14px;text-align:center}
 </style>
@@ -42,8 +42,7 @@ input{width:100%;padding:14px;border-radius:12px;border:1px solid #ccc}
   </div>
 
   <div class="card">
-    <h3>🚀 Start Earning</h3>
-    <button class="btn" onclick="show('earn',navEarn)">Go to Earn</button>
+    <button class="btn" onclick="show('earn',navEarn)">🚀 Start Earning</button>
   </div>
 </div>
 
@@ -76,26 +75,31 @@ input{width:100%;padding:14px;border-radius:12px;border:1px solid #ccc}
 
 <!-- REFER -->
 <div id="refer" class="page">
-  <div class="card">
-    <h3>👥 Refer & Earn</h3>
-    <p>Invite 1 user to unlock withdraw</p>
-    <p>Your referral code: <b><span id="uid2"></span></b></p>
+  <div class="card" id="referralCard">
+    <h3>🎁 Apply Referral</h3>
+    <input id="referralInput" placeholder="Enter Referral Code">
+    <br><br>
+    <button class="btn" onclick="applyReferral()">Submit Referral</button>
+    <p id="referralStatus"></p>
   </div>
 </div>
 
 <!-- PROFILE -->
 <div id="profile" class="page">
   <div class="card">
-    <h3>⚙️ Profile</h3>
-    <label>Display Name</label>
-    <input id="nameInput" placeholder="Enter name">
-    <br><br>
-    <button class="btn" onclick="saveName()">Save Name</button>
+    <p><b>Name:</b> <span id="displayName"></span></p>
+    <button class="btn" onclick="editName()">Change Name</button>
+
+    <div id="editBox" style="display:none;margin-top:10px">
+      <input id="nameInput" placeholder="Enter name">
+      <br><br>
+      <button class="btn" onclick="saveName()">Save Name</button>
+    </div>
+
     <hr>
-    <p><b>User ID:</b> <span id="uid3"></span></p>
+    <p><b>User ID:</b> <span id="uid2"></span></p>
     <p><b>Status:</b> Active</p>
-    <p><b>Referrals:</b> <span id="refs2"></span></p>
-    <p><b>Total Ads Watched:</b> <span id="totalAds"></span></p>
+    <p><b>Total Earned:</b> <span id="earned">0.00</span> USDT</p>
   </div>
 </div>
 
@@ -112,54 +116,46 @@ input{width:100%;padding:14px;border-radius:12px;border:1px solid #ccc}
 const today = new Date().toDateString();
 let uid = localStorage.uid || "UID-"+Math.floor(Math.random()*1e9);
 let name = localStorage.name || "User";
-let balance = Number(localStorage.balance || 0);
-let refs = Number(localStorage.refs || 0);
-let lastAd = Number(localStorage.lastAd || 0);
+let balance = Number(localStorage.balance||0);
+let refs = Number(localStorage.refs||0);
+let lastAd = Number(localStorage.lastAd||0);
 let dailyAds = localStorage.adDate===today ? Number(localStorage.dailyAds||0) : 0;
-let totalAds = Number(localStorage.totalAds||0);
+let totalEarned = Number(localStorage.totalEarned||0);
 
 localStorage.uid = uid;
 localStorage.adDate = today;
 
 function updateUI(){
-  uidEl('uid').innerText = uid;
-  uidEl('uid2').innerText = uid;
-  uidEl('uid3').innerText = uid;
-  uidEl('username').innerText = name;
-  uidEl('balance').innerText = balance.toFixed(2);
-  uidEl('refs').innerText = refs;
-  uidEl('refs2').innerText = refs;
-  uidEl('dailyAds').innerText = dailyAds;
-  uidEl('totalAds').innerText = totalAds;
-  nameInput.value = name;
+  uidEl("uid").innerText=uid;
+  uidEl("uid2").innerText=uid;
+  uidEl("username").innerText=name;
+  uidEl("displayName").innerText=name;
+  uidEl("balance").innerText=balance.toFixed(2);
+  uidEl("refs").innerText=refs;
+  uidEl("dailyAds").innerText=dailyAds;
+  uidEl("earned").innerText=totalEarned.toFixed(2);
 }
 function uidEl(id){return document.getElementById(id)}
 updateUI();
 
 function show(id,el){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  el.classList.add('active');
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  el.classList.add("active");
 }
 
 function watchAd(){
-  if(dailyAds>=30){
-    adStatus.innerText="❌ Daily limit reached";
-    return;
-  }
-  if(Date.now()-lastAd<3600000){
-    adStatus.innerText="⏳ Wait before next ad";
-    return;
-  }
+  if(dailyAds>=30){adStatus.innerText="❌ Daily limit reached";return;}
+  if(Date.now()-lastAd<3600000){adStatus.innerText="⏳ Wait 1 hour";return;}
   show_10346240().then(()=>{
     balance+=0.02;
+    totalEarned+=0.02;
     dailyAds++;
-    totalAds++;
     lastAd=Date.now();
     localStorage.balance=balance;
+    localStorage.totalEarned=totalEarned;
     localStorage.dailyAds=dailyAds;
-    localStorage.totalAds=totalAds;
     localStorage.lastAd=lastAd;
     updateUI();
     adStatus.innerText="✅ Reward added";
@@ -174,12 +170,28 @@ function withdraw(){
   wdStatus.innerText="✅ Withdraw request sent";
 }
 
-function saveName(){
-  name = nameInput.value || "User";
-  localStorage.name = name;
+function applyReferral(){
+  const code=document.getElementById("referralInput").value.trim();
+  if(!code){alert("Enter referral code");return;}
+  localStorage.referralApplied=code;
+  localStorage.refs=1;
+  document.getElementById("referralCard").innerHTML="<h3 style='color:green'>✅ Referral Applied Successfully</h3>";
   updateUI();
 }
+if(localStorage.referralApplied){
+  document.getElementById("referralCard").innerHTML="<h3 style='color:green'>✅ Referral Applied Successfully</h3>";
+}
+
+function saveName(){
+  name=nameInput.value||"User";
+  localStorage.name=name;
+  editBox.style.display="none";
+  updateUI();
+}
+function editName(){editBox.style.display="block";}
 </script>
 
 </body>
 </html>
+
+
