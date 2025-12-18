@@ -1,84 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Quick Earn BD</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Telegram Mini App -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <!-- Monetag SDK (required) -->
-  <script src="https://cdn.monetag.com/ads.js"></script>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Monetag Telegram Mini App SDK (REQUIRED) -->
+  <script src="https://telegram.adsgram.ai/sdk.js"></script>
 
   <style>
     body {
+      margin: 0;
+      padding: 0;
       font-family: Arial, sans-serif;
-      background: #f6f7fb;
+      background: #f4f6fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: #ffffff;
+      width: 90%;
+      max-width: 400px;
+      padding: 30px;
+      border-radius: 15px;
       text-align: center;
-      padding: 40px 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
+
     h1 {
-      font-size: 28px;
-      margin-bottom: 5px;
+      margin-bottom: 10px;
     }
+
     p {
       color: #555;
       margin-bottom: 25px;
     }
+
     button {
-      background: #6c63ff;
-      color: #fff;
-      border: none;
-      padding: 15px 30px;
+      width: 100%;
+      padding: 15px;
       font-size: 18px;
+      background: #6c63ff;
+      color: white;
+      border: none;
       border-radius: 10px;
       cursor: pointer;
     }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
     #status {
       margin-top: 20px;
-      font-size: 16px;
+      font-size: 15px;
     }
   </style>
 </head>
 
 <body>
 
-  <h1>💰 Quick Earn BD</h1>
-  <p>Watch ads & earn real money</p>
+  <div class="card">
+    <h1>💰 Quick Earn BD</h1>
+    <p>Watch ads & earn real money</p>
 
-  <button onclick="watchAd()">▶ Start Watching Ads</button>
+    <button onclick="watchAd()">▶ Start Watching Ads</button>
 
-  <div id="status"></div>
+    <div id="status"></div>
+  </div>
 
   <script>
     let lastAdTime = 0;
-    const COOLDOWN = 60 * 60 * 1000; // 1 hour
+    const COOLDOWN = 60 * 60 * 1000; // 1 hour cooldown
 
     function watchAd() {
       const now = Date.now();
 
       if (now - lastAdTime < COOLDOWN) {
         document.getElementById("status").innerText =
-          "⏳ Please wait before watching next ad.";
+          "⏳ Please wait before watching the next ad.";
         return;
       }
 
       if (typeof window.showMonetagAd !== "function") {
         document.getElementById("status").innerText =
-          "❌ Ad not ready. Try again later.";
+          "❌ Ad not ready. Please try again later.";
         return;
       }
 
       window.showMonetagAd({
-        adUnitId: "PASTE_YOUR_MONETAG_AD_UNIT_ID_HERE",
-        onComplete: () => {
+        adUnitId: "YOUR_AD_UNIT_ID_HERE", // 🔴 Monetag Ad Unit ID বসাবেন
+        onComplete: function () {
           lastAdTime = Date.now();
           document.getElementById("status").innerText =
             "✅ Ad completed! Reward added.";
         },
-        onError: () => {
+        onError: function () {
           document.getElementById("status").innerText =
             "❌ Ad failed. Try again later.";
         }
