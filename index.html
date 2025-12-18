@@ -1,69 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Quick Earn BD</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Monetag Telegram Mini App SDK (REQUIRED) -->
-  <script src="https://telegram.adsgram.ai/sdk.js"></script>
+  <!-- Telegram Mini App -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Monetag SDK (YOUR ZONE ID = 10346240) -->
+  <script
+    src="//libtl.com/sdk.js"
+    data-zone="10346240"
+    data-sdk="show_10346240">
+  </script>
 
   <style>
     body {
       margin: 0;
-      padding: 0;
       font-family: Arial, sans-serif;
-      background: #f4f6fb;
+      background: #f7f8fc;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
     }
 
-    .card {
-      background: #ffffff;
-      width: 90%;
-      max-width: 400px;
-      padding: 30px;
-      border-radius: 15px;
+    .app {
       text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
     }
 
     h1 {
-      margin-bottom: 10px;
+      margin-bottom: 5px;
     }
 
     p {
-      color: #555;
-      margin-bottom: 25px;
+      color: #666;
     }
 
     button {
-      width: 100%;
-      padding: 15px;
-      font-size: 18px;
-      background: #6c63ff;
-      color: white;
+      margin-top: 20px;
+      padding: 15px 25px;
+      font-size: 16px;
       border: none;
       border-radius: 10px;
+      background: #6c63ff;
+      color: white;
       cursor: pointer;
     }
 
-    button:active {
-      transform: scale(0.98);
+    button:disabled {
+      background: #aaa;
     }
 
     #status {
-      margin-top: 20px;
-      font-size: 15px;
+      margin-top: 15px;
+      font-weight: bold;
     }
   </style>
 </head>
 
 <body>
-
-  <div class="card">
+  <div class="app">
     <h1>💰 Quick Earn BD</h1>
     <p>Watch ads & earn real money</p>
 
@@ -73,38 +74,42 @@
   </div>
 
   <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+
     let lastAdTime = 0;
-    const COOLDOWN = 60 * 60 * 1000; // 1 hour cooldown
+    const COOLDOWN = 60 * 60 * 1000; // 1 hour
 
     function watchAd() {
       const now = Date.now();
+      const status = document.getElementById("status");
 
       if (now - lastAdTime < COOLDOWN) {
-        document.getElementById("status").innerText =
-          "⏳ Please wait before watching the next ad.";
+        status.innerText = "⏳ Please wait before watching next ad.";
+        status.style.color = "orange";
         return;
       }
 
-      if (typeof window.showMonetagAd !== "function") {
-        document.getElementById("status").innerText =
-          "❌ Ad not ready. Please try again later.";
+      if (typeof window.show_10346240 !== "function") {
+        status.innerText = "❌ Ad not ready. Try again later.";
+        status.style.color = "red";
         return;
       }
 
-      window.showMonetagAd({
-        adUnitId: "YOUR_AD_UNIT_ID_HERE", // 🔴 Monetag Ad Unit ID বসাবেন
-        onComplete: function () {
+      status.innerText = "⏳ Loading ad...";
+      status.style.color = "black";
+
+      window.show_10346240()
+        .then(() => {
           lastAdTime = Date.now();
-          document.getElementById("status").innerText =
-            "✅ Ad completed! Reward added.";
-        },
-        onError: function () {
-          document.getElementById("status").innerText =
-            "❌ Ad failed. Try again later.";
-        }
-      });
+          status.innerText = "✅ Ad completed! Reward added.";
+          status.style.color = "green";
+        })
+        .catch(() => {
+          status.innerText = "❌ Ad failed. Try again later.";
+          status.style.color = "red";
+        });
     }
   </script>
-
 </body>
 </html>
