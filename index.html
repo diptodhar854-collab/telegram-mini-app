@@ -1,45 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quick Earn BD</title>
 
-<!-- Monetag SDK -->
+<!-- Monetag -->
 <script src="//libtl.com/sdk.js" data-zone="10346240" data-sdk="show_10346240"></script>
 
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:#f5f6fa;
+  font-family:Inter,Arial,sans-serif;
+  background:#f2f4fa;
+  color:#222;
 }
+
+/* PAGE SYSTEM */
 .page{
   display:none;
-  padding:20px;
-  padding-bottom:90px;
+  padding:90px 20px 120px;
 }
-.page.active{display:block;}
+.page.active{display:block}
 
+/* GLASS CARD */
 .card{
-  background:#fff;
-  border-radius:12px;
-  padding:18px;
-  margin-bottom:15px;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
+  background:rgba(255,255,255,.92);
+  border-radius:18px;
+  padding:24px;
+  box-shadow:0 12px 30px rgba(0,0,0,.08);
+  backdrop-filter:blur(6px);
 }
+
+/* BUTTON */
 .btn{
   width:100%;
-  padding:14px;
+  padding:16px;
   border:none;
-  border-radius:10px;
-  background:#6c63ff;
+  border-radius:14px;
+  background:linear-gradient(135deg,#6c63ff,#8a7cff);
   color:#fff;
   font-size:16px;
+  font-weight:600;
   cursor:pointer;
 }
-.btn:active{opacity:.8}
+.btn:active{transform:scale(.98)}
 
+/* HOME HERO */
+.hero{
+  background:linear-gradient(135deg,#6c63ff,#8a7cff);
+  border-radius:22px;
+  padding:30px;
+  color:#fff;
+  margin-bottom:30px;
+}
+.hero h2{margin:0 0 8px}
+.hero small{opacity:.9}
+
+/* STATS */
+.stats{
+  display:flex;
+  gap:14px;
+  margin-top:18px;
+}
+.stat{
+  flex:1;
+  background:#fff;
+  color:#333;
+  border-radius:14px;
+  padding:16px;
+  text-align:center;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+}
+
+/* CENTER CONTENT */
+.center{
+  min-height:60vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* EARN DESIGN */
+.earn-bg{
+  background:radial-gradient(circle at top,#e6e8ff,transparent 60%);
+  padding:30px 0;
+}
+
+/* NAV BAR */
 .bottom-nav{
   position:fixed;
   bottom:0;
@@ -48,21 +97,22 @@ body{
   background:#fff;
   display:flex;
   border-top:1px solid #ddd;
+  box-shadow:0 -4px 20px rgba(0,0,0,.06);
 }
 .nav-item{
   flex:1;
   text-align:center;
-  padding:8px 0;
+  padding:12px 0 10px;
   font-size:12px;
   color:#777;
-}
-.nav-item.active{
-  color:#6c63ff;
-  font-weight:bold;
 }
 .nav-item span{
   display:block;
   font-size:20px;
+}
+.nav-item.active{
+  color:#6c63ff;
+  font-weight:600;
 }
 </style>
 </head>
@@ -71,33 +121,53 @@ body{
 
 <!-- HOME -->
 <div id="home" class="page active">
-  <div class="card">
+  <div class="hero">
     <h2>Welcome 👋</h2>
-    <p><b>User ID:</b> <span id="uid"></span></p>
-    <p><b>Balance:</b> <span id="balance">0.00</span> USDT</p>
-    <p><b>Referrals:</b> <span id="refs">0</span></p>
+    <small>User ID: <span id="uid"></span></small>
+
+    <div class="stats">
+      <div class="stat">
+        <b>Balance</b><br>
+        <span id="balance">0.00</span> USDT
+      </div>
+      <div class="stat">
+        <b>Referrals</b><br>
+        <span id="refs">0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🚀 Start Earning</h3>
+    <p>Watch ads and earn real USDT directly.</p>
+    <button class="btn" onclick="show('earn',navEarn)">Go to Earn</button>
   </div>
 </div>
 
 <!-- EARN -->
-<div id="earn" class="page">
-  <div class="card">
-    <h3>🎬 Ad Stream</h3>
-    <p>1 ad every 1 hour</p>
-    <button class="btn" onclick="watchAd()">Start Watching Ads</button>
-    <p id="adStatus"></p>
+<div id="earn" class="page earn-bg">
+  <div class="center">
+    <div class="card" style="max-width:420px;width:100%;text-align:center">
+      <h3>🎬 Ad Stream</h3>
+      <p>1 ad every 1 hour</p>
+      <button class="btn" onclick="watchAd()">Start Watching Ads</button>
+      <p id="adStatus"></p>
+    </div>
   </div>
 </div>
 
 <!-- WALLET -->
 <div id="wallet" class="page">
-  <div class="card">
-    <h3>💼 Withdraw</h3>
-    <p>Minimum: 2 USDT + 1 referral</p>
-    <input id="addr" placeholder="Binance TRC20 Address" style="width:100%;padding:12px;border-radius:8px;border:1px solid #ccc">
-    <br><br>
-    <button class="btn" onclick="withdraw()">Request Withdraw</button>
-    <p id="wdStatus"></p>
+  <div class="center">
+    <div class="card" style="max-width:420px;width:100%">
+      <h3>💼 Withdraw</h3>
+      <p>Minimum: <b>2 USDT + 1 referral</b></p>
+      <input placeholder="Binance TRC20 Address"
+        style="width:100%;padding:14px;border-radius:12px;border:1px solid #ccc">
+      <br><br>
+      <button class="btn" onclick="withdraw()">Request Withdraw</button>
+      <p id="wdStatus"></p>
+    </div>
   </div>
 </div>
 
@@ -115,14 +185,14 @@ body{
   <div class="card">
     <h3>⚙️ Profile</h3>
     <p><b>User ID:</b> <span id="uid2"></span></p>
-    <p><b>Status:</b> Active</p>
+    <p>Status: Active</p>
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
+<!-- NAV -->
 <div class="bottom-nav">
   <div class="nav-item active" onclick="show('home',this)"><span>🏠</span>Home</div>
-  <div class="nav-item" onclick="show('earn',this)"><span>🎯</span>Earn</div>
+  <div class="nav-item" id="navEarn" onclick="show('earn',this)"><span>🎯</span>Earn</div>
   <div class="nav-item" onclick="show('wallet',this)"><span>💼</span>Wallet</div>
   <div class="nav-item" onclick="show('refer',this)"><span>👥</span>Refer</div>
   <div class="nav-item" onclick="show('profile',this)"><span>⚙️</span>Profile</div>
@@ -130,27 +200,30 @@ body{
 
 <script>
 let uid = localStorage.uid || "UID-"+Math.floor(Math.random()*1e9);
-localStorage.uid = uid;
+localStorage.uid=uid;
+let balance=Number(localStorage.balance||0);
+let refs=Number(localStorage.refs||0);
+let lastAd=Number(localStorage.lastAd||0);
 
-let balance = Number(localStorage.balance || 0);
-let refs = Number(localStorage.refs || 0);
-let lastAd = Number(localStorage.lastAd || 0);
-
-document.getElementById("uid").innerText = uid;
-document.getElementById("uid2").innerText = uid;
-document.getElementById("balance").innerText = balance.toFixed(2);
-document.getElementById("refs").innerText = refs;
+function updateUI(){
+  uidEl('uid').innerText=uid;
+  uidEl('uid2').innerText=uid;
+  uidEl('balance').innerText=balance.toFixed(2);
+  uidEl('refs').innerText=refs;
+}
+function uidEl(id){return document.getElementById(id)}
+updateUI();
 
 function show(id,el){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
-  el.classList.add("active");
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
 }
 
 function watchAd(){
   if(Date.now()-lastAd<3600000){
-    adStatus.innerText="⏳ Wait before next ad";
+    adStatus.innerText="⏳ Please wait before next ad";
     return;
   }
   show_10346240().then(()=>{
@@ -158,8 +231,8 @@ function watchAd(){
     lastAd=Date.now();
     localStorage.balance=balance;
     localStorage.lastAd=lastAd;
-    balanceSpanUpdate();
-    adStatus.innerText="✅ Ad completed! Reward added.";
+    updateUI();
+    adStatus.innerText="✅ Reward added successfully!";
   });
 }
 
@@ -168,11 +241,7 @@ function withdraw(){
     wdStatus.innerText="❌ Conditions not met";
     return;
   }
-  wdStatus.innerText="✅ Withdraw request sent (manual)";
-}
-
-function balanceSpanUpdate(){
-  document.getElementById("balance").innerText=balance.toFixed(2);
+  wdStatus.innerText="✅ Withdraw request sent (manual review)";
 }
 </script>
 
