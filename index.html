@@ -1,169 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Quick Earn BD</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quick Earn BD</title>
 
-  <!-- Telegram Mini App -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Monetag SDK -->
+<script src="//libtl.com/sdk.js" data-zone="10346240" data-sdk="show_10346240"></script>
 
-  <!-- Monetag SDK (REQUIRED) -->
-  <script src="//libtl.com/sdk.js"
-          data-zone="10346240"
-          data-sdk="show_10346240"></script>
+<style>
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f5f6fa;
+}
+.page{
+  display:none;
+  padding:20px;
+  padding-bottom:90px;
+}
+.page.active{display:block;}
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f6f7fb;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-    h1 {
-      margin-top: 30px;
-    }
-    .card {
-      background: #fff;
-      margin: 20px;
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    }
-    button {
-      background: #6c63ff;
-      color: #fff;
-      border: none;
-      padding: 15px 25px;
-      border-radius: 12px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    button:disabled {
-      background: #999;
-    }
-    .success { color: green; }
-    .error { color: red; }
-    .menu {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #fff;
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
-      box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
-    }
-  </style>
+.card{
+  background:#fff;
+  border-radius:12px;
+  padding:18px;
+  margin-bottom:15px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+.btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  background:#6c63ff;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+.btn:active{opacity:.8}
+
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#fff;
+  display:flex;
+  border-top:1px solid #ddd;
+}
+.nav-item{
+  flex:1;
+  text-align:center;
+  padding:8px 0;
+  font-size:12px;
+  color:#777;
+}
+.nav-item.active{
+  color:#6c63ff;
+  font-weight:bold;
+}
+.nav-item span{
+  display:block;
+  font-size:20px;
+}
+</style>
 </head>
 
 <body>
 
-<h1>💰 Quick Earn BD</h1>
-<p>Watch ads & earn real money</p>
-
-<div class="card">
-  <h3>👤 User Info</h3>
-  <p><b>User ID:</b> <span id="uid"></span></p>
-  <p><b>Referrals:</b> <span id="refs">0</span></p>
-  <p><b>Balance:</b> <span id="balance">0.00</span> USDT</p>
+<!-- HOME -->
+<div id="home" class="page active">
+  <div class="card">
+    <h2>Welcome 👋</h2>
+    <p><b>User ID:</b> <span id="uid"></span></p>
+    <p><b>Balance:</b> <span id="balance">0.00</span> USDT</p>
+    <p><b>Referrals:</b> <span id="refs">0</span></p>
+  </div>
 </div>
 
-<div class="card">
-  <h3>🎬 Ad Stream</h3>
-  <p>1 ad every 1 hour</p>
-  <button onclick="watchAd()">Start Watching Ads</button>
-  <p id="status"></p>
+<!-- EARN -->
+<div id="earn" class="page">
+  <div class="card">
+    <h3>🎬 Ad Stream</h3>
+    <p>1 ad every 1 hour</p>
+    <button class="btn" onclick="watchAd()">Start Watching Ads</button>
+    <p id="adStatus"></p>
+  </div>
 </div>
 
-<div class="card">
-  <h3>💸 Withdraw</h3>
-  <p>Minimum: 2 USDT + 1 referral</p>
-  <input id="wallet" placeholder="Binance USDT (TRC20)" style="padding:10px;width:80%;" />
-  <br><br>
-  <button onclick="withdraw()">Request Withdraw</button>
-  <p id="wstatus"></p>
+<!-- WALLET -->
+<div id="wallet" class="page">
+  <div class="card">
+    <h3>💼 Withdraw</h3>
+    <p>Minimum: 2 USDT + 1 referral</p>
+    <input id="addr" placeholder="Binance TRC20 Address" style="width:100%;padding:12px;border-radius:8px;border:1px solid #ccc">
+    <br><br>
+    <button class="btn" onclick="withdraw()">Request Withdraw</button>
+    <p id="wdStatus"></p>
+  </div>
 </div>
 
-<div class="menu">
-  <span>🏠 Home</span>
-  <span>🎯 Earn</span>
-  <span>💼 Wallet</span>
-  <span>👥 Refer</span>
-  <span>⚙️ Profile</span>
+<!-- REFER -->
+<div id="refer" class="page">
+  <div class="card">
+    <h3>👥 Refer & Earn</h3>
+    <p>Invite at least 1 user to unlock withdraw.</p>
+    <p>Your referral code is your User ID.</p>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" class="page">
+  <div class="card">
+    <h3>⚙️ Profile</h3>
+    <p><b>User ID:</b> <span id="uid2"></span></p>
+    <p><b>Status:</b> Active</p>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item active" onclick="show('home',this)"><span>🏠</span>Home</div>
+  <div class="nav-item" onclick="show('earn',this)"><span>🎯</span>Earn</div>
+  <div class="nav-item" onclick="show('wallet',this)"><span>💼</span>Wallet</div>
+  <div class="nav-item" onclick="show('refer',this)"><span>👥</span>Refer</div>
+  <div class="nav-item" onclick="show('profile',this)"><span>⚙️</span>Profile</div>
 </div>
 
 <script>
-  // ====== USER SYSTEM ======
-  const tg = window.Telegram.WebApp;
-  tg.ready();
+let uid = localStorage.uid || "UID-"+Math.floor(Math.random()*1e9);
+localStorage.uid = uid;
 
-  let uid = localStorage.getItem("uid");
-  if (!uid) {
-    uid = "UID-" + Math.floor(Math.random() * 1000000000);
-    localStorage.setItem("uid", uid);
+let balance = Number(localStorage.balance || 0);
+let refs = Number(localStorage.refs || 0);
+let lastAd = Number(localStorage.lastAd || 0);
+
+document.getElementById("uid").innerText = uid;
+document.getElementById("uid2").innerText = uid;
+document.getElementById("balance").innerText = balance.toFixed(2);
+document.getElementById("refs").innerText = refs;
+
+function show(id,el){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  el.classList.add("active");
+}
+
+function watchAd(){
+  if(Date.now()-lastAd<3600000){
+    adStatus.innerText="⏳ Wait before next ad";
+    return;
   }
-  document.getElementById("uid").innerText = uid;
+  show_10346240().then(()=>{
+    balance+=0.02;
+    lastAd=Date.now();
+    localStorage.balance=balance;
+    localStorage.lastAd=lastAd;
+    balanceSpanUpdate();
+    adStatus.innerText="✅ Ad completed! Reward added.";
+  });
+}
 
-  let balance = parseFloat(localStorage.getItem("balance") || "0");
-  let refs = parseInt(localStorage.getItem("refs") || "0");
-
-  document.getElementById("balance").innerText = balance.toFixed(2);
-  document.getElementById("refs").innerText = refs;
-
-  // ====== AD SYSTEM ======
-  const COOLDOWN = 60 * 60 * 1000;
-  let lastAd = localStorage.getItem("lastAd") || 0;
-
-  function watchAd() {
-    const now = Date.now();
-    if (now - lastAd < COOLDOWN) {
-      document.getElementById("status").innerHTML =
-        "<span class='error'>⏳ Please wait before next ad</span>";
-      return;
-    }
-
-    if (typeof window.show_10346240 !== "function") {
-      document.getElementById("status").innerHTML =
-        "<span class='error'>Ad not ready</span>";
-      return;
-    }
-
-    window.show_10346240().then(() => {
-      balance += 0.01;
-      localStorage.setItem("balance", balance);
-      localStorage.setItem("lastAd", Date.now());
-      document.getElementById("balance").innerText = balance.toFixed(2);
-      document.getElementById("status").innerHTML =
-        "<span class='success'>✅ Ad completed! Reward added.</span>";
-    });
+function withdraw(){
+  if(balance<2||refs<1){
+    wdStatus.innerText="❌ Conditions not met";
+    return;
   }
+  wdStatus.innerText="✅ Withdraw request sent (manual)";
+}
 
-  // ====== WITHDRAW SYSTEM ======
-  function withdraw() {
-    const wallet = document.getElementById("wallet").value.trim();
-    if (balance < 2) {
-      document.getElementById("wstatus").innerHTML =
-        "<span class='error'>Minimum 2 USDT required</span>";
-      return;
-    }
-    if (refs < 1) {
-      document.getElementById("wstatus").innerHTML =
-        "<span class='error'>At least 1 referral required</span>";
-      return;
-    }
-    if (!wallet) {
-      document.getElementById("wstatus").innerHTML =
-        "<span class='error'>Enter Binance address</span>";
-      return;
-    }
-
-    document.getElementById("wstatus").innerHTML =
-      "<span class='success'>✅ Withdraw request sent (manual approval)</span>";
-  }
+function balanceSpanUpdate(){
+  document.getElementById("balance").innerText=balance.toFixed(2);
+}
 </script>
 
 </body>
