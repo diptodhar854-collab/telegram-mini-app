@@ -65,7 +65,7 @@ input{width:100%;padding:14px;border-radius:12px;border:1px solid #ccc}
     <div class="card" style="max-width:420px;width:100%">
       <h3>💼 Withdraw</h3>
       <p>Minimum: <b>2 USDT + 1 referral</b></p>
-      <input placeholder="Binance TRC20 Address">
+      <input placeholder="Binance BEP20 Address">
       <br><br>
       <button class="btn" onclick="withdraw()">Request Withdraw</button>
       <p id="wdStatus"></p>
@@ -73,24 +73,13 @@ input{width:100%;padding:14px;border-radius:12px;border:1px solid #ccc}
   </div>
 </div>
 
-<!-- REFER (FIXED & STRICT) -->
+<!-- REFER -->
 <div id="refer" class="page">
-  <div class="card">
-    <h3>👥 Referral System</h3>
-
-    <p><b>Your Referral Code</b></p>
-    <div id="myRefCode" style="font-size:18px;font-weight:bold;color:#6c63ff"></div>
-
-    <p style="margin-top:6px">
-      <b>Total Referrals:</b> <span id="refsCount">0</span>
-    </p>
-
-    <div id="applyBox" style="margin-top:14px">
-      <input id="referralInput" placeholder="Enter Referral Code">
-      <br><br>
-      <button class="btn" onclick="applyReferral()">Submit Referral</button>
-    </div>
-
+  <div class="card" id="referralCard">
+    <h3>🎁 Apply Referral</h3>
+    <input id="referralInput" placeholder="Enter Referral Code">
+    <br><br>
+    <button class="btn" onclick="applyReferral()">Submit Referral</button>
     <p id="referralStatus"></p>
   </div>
 </div>
@@ -125,108 +114,94 @@ input{width:100%;padding:14px;border-radius:12px;border:1px solid #ccc}
 
 <script>
 const today = new Date().toDateString();
-let uid = localStorage.uid || "UID-"+Math.floor(Math.random()*1e9);
+
+let uid = localStorage.uid || "UID-" + Math.floor(Math.random()*1e9);
 let name = localStorage.name || "User";
-let balance = Number(localStorage.balance||0);
-let refs = Number(localStorage.refs||0);
-let lastAd = Number(localStorage.lastAd||0);
-let dailyAds = localStorage.adDate===today ? Number(localStorage.dailyAds||0) : 0;
-let totalEarned = Number(localStorage.totalEarned||0);
+let balance = Number(localStorage.balance || 0);
+let refs = Number(localStorage.refs || 0);
+let totalEarned = Number(localStorage.totalEarned || 0);
+let dailyAds = localStorage.adDate === today ? Number(localStorage.dailyAds || 0) : 0;
 
 localStorage.uid = uid;
 localStorage.adDate = today;
 
-function uidEl(id){return document.getElementById(id)}
+function el(id){return document.getElementById(id)}
 
 function updateUI(){
-  uidEl("uid").innerText=uid;
-  uidEl("uid2").innerText=uid;
-  uidEl("username").innerText=name;
-  uidEl("displayName").innerText=name;
-  uidEl("balance").innerText=balance.toFixed(2);
-  uidEl("refs").innerText=refs;
-  uidEl("refsCount").innerText=refs;
-  uidEl("dailyAds").innerText=dailyAds;
-  uidEl("earned").innerText=totalEarned.toFixed(2);
+  el("uid").innerText = uid;
+  el("uid2").innerText = uid;
+  el("username").innerText = name;
+  el("displayName").innerText = name;
+  el("balance").innerText = balance.toFixed(2);
+  el("refs").innerText = refs;
+  el("dailyAds").innerText = dailyAds;
+  el("earned").innerText = totalEarned.toFixed(2);
 }
 updateUI();
 
-function show(id,el){
+function show(id, elBtn){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
-  el.classList.add("active");
+  elBtn.classList.add("active");
 }
 
 function watchAd(){
-  if(dailyAds>=30){adStatus.innerText="❌ Daily limit reached";return;}
-  if(Date.now()-lastAd<3600000){adStatus.innerText="⏳ Wait 1 hour";return;}
+  if(dailyAds >= 30){
+    el("adStatus").innerText = "❌ Daily limit reached";
+    return;
+  }
+
   show_10346240().then(()=>{
-    balance+=0.02;
-    totalEarned+=0.02;
+    balance += 0.02;
+    totalEarned += 0.02;
     dailyAds++;
-    lastAd=Date.now();
-    localStorage.balance=balance;
-    localStorage.totalEarned=totalEarned;
-    localStorage.dailyAds=dailyAds;
-    localStorage.lastAd=lastAd;
+
+    localStorage.balance = balance;
+    localStorage.totalEarned = totalEarned;
+    localStorage.dailyAds = dailyAds;
+
     updateUI();
-    adStatus.innerText="✅ Reward added";
+    el("adStatus").innerText = "✅ Reward added";
   });
 }
 
 function withdraw(){
-  if(balance<2||refs<1){
-    wdStatus.innerText="❌ Conditions not met";
+  if(balance < 2 || refs < 1){
+    el("wdStatus").innerText = "❌ Conditions not met";
     return;
   }
-  wdStatus.innerText="✅ Withdraw request sent";
-}
-
-// ===== STRICT REFERRAL SYSTEM =====
-let myRefCode = "REF" + uid.slice(-6);
-uidEl("myRefCode").innerText = myRefCode;
-
-if(localStorage.refApplied==="yes"){
-  uidEl("applyBox").style.display="none";
-  uidEl("referralStatus").innerText="✅ Referral Applied Successfully";
+  balance = 0;
+  localStorage.balance = 0;
+  updateUI();
+  el("wdStatus").innerText = "⏳ Withdraw pending (auto success)";
 }
 
 function applyReferral(){
-  const code = uidEl("referralInput").value.trim().toUpperCase();
-  const status = uidEl("referralStatus");
-
+  if(localStorage.referralApplied){
+    el("referralStatus").innerText = "❌ Already applied";
+    return;
+  }
+  const code = el("referralInput").value.trim();
   if(!code){
-    status.innerText="❌ Enter referral code";
+    el("referralStatus").innerText = "❌ Invalid referral code";
     return;
   }
-  if(code===myRefCode){
-    status.innerText="❌ You cannot use your own code";
-    return;
-  }
-  if(!code.startsWith("REF") || code.length!==myRefCode.length){
-    status.innerText="❌ Invalid referral code";
-    return;
-  }
-
-  localStorage.refApplied="yes";
-  refs++;
-  localStorage.refs=refs;
-  uidEl("applyBox").style.display="none";
-  status.innerText="✅ Referral Applied Successfully";
+  localStorage.referralApplied = code;
+  refs = 1;
+  localStorage.refs = refs;
+  el("referralCard").innerHTML = "<h3 style='color:green'>✅ Referral Applied Successfully</h3>";
   updateUI();
 }
 
+function editName(){ el("editBox").style.display="block"; }
 function saveName(){
-  name=nameInput.value||"User";
-  localStorage.name=name;
-  editBox.style.display="none";
+  name = el("nameInput").value || "User";
+  localStorage.name = name;
+  el("editBox").style.display="none";
   updateUI();
 }
-function editName(){editBox.style.display="block";}
 </script>
 
 </body>
 </html>
-
-
