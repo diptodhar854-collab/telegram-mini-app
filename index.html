@@ -73,13 +73,24 @@ input{width:100%;padding:14px;border-radius:12px;border:1px solid #ccc}
   </div>
 </div>
 
-<!-- REFER -->
+<!-- REFER (FIXED & STRICT) -->
 <div id="refer" class="page">
-  <div class="card" id="referralCard">
-    <h3>🎁 Apply Referral</h3>
-    <input id="referralInput" placeholder="Enter Referral Code">
-    <br><br>
-    <button class="btn" onclick="applyReferral()">Submit Referral</button>
+  <div class="card">
+    <h3>👥 Referral System</h3>
+
+    <p><b>Your Referral Code</b></p>
+    <div id="myRefCode" style="font-size:18px;font-weight:bold;color:#6c63ff"></div>
+
+    <p style="margin-top:6px">
+      <b>Total Referrals:</b> <span id="refsCount">0</span>
+    </p>
+
+    <div id="applyBox" style="margin-top:14px">
+      <input id="referralInput" placeholder="Enter Referral Code">
+      <br><br>
+      <button class="btn" onclick="applyReferral()">Submit Referral</button>
+    </div>
+
     <p id="referralStatus"></p>
   </div>
 </div>
@@ -125,6 +136,8 @@ let totalEarned = Number(localStorage.totalEarned||0);
 localStorage.uid = uid;
 localStorage.adDate = today;
 
+function uidEl(id){return document.getElementById(id)}
+
 function updateUI(){
   uidEl("uid").innerText=uid;
   uidEl("uid2").innerText=uid;
@@ -132,10 +145,10 @@ function updateUI(){
   uidEl("displayName").innerText=name;
   uidEl("balance").innerText=balance.toFixed(2);
   uidEl("refs").innerText=refs;
+  uidEl("refsCount").innerText=refs;
   uidEl("dailyAds").innerText=dailyAds;
   uidEl("earned").innerText=totalEarned.toFixed(2);
 }
-function uidEl(id){return document.getElementById(id)}
 updateUI();
 
 function show(id,el){
@@ -170,16 +183,38 @@ function withdraw(){
   wdStatus.innerText="✅ Withdraw request sent";
 }
 
-function applyReferral(){
-  const code=document.getElementById("referralInput").value.trim();
-  if(!code){alert("Enter referral code");return;}
-  localStorage.referralApplied=code;
-  localStorage.refs=1;
-  document.getElementById("referralCard").innerHTML="<h3 style='color:green'>✅ Referral Applied Successfully</h3>";
-  updateUI();
+// ===== STRICT REFERRAL SYSTEM =====
+let myRefCode = "REF" + uid.slice(-6);
+uidEl("myRefCode").innerText = myRefCode;
+
+if(localStorage.refApplied==="yes"){
+  uidEl("applyBox").style.display="none";
+  uidEl("referralStatus").innerText="✅ Referral Applied Successfully";
 }
-if(localStorage.referralApplied){
-  document.getElementById("referralCard").innerHTML="<h3 style='color:green'>✅ Referral Applied Successfully</h3>";
+
+function applyReferral(){
+  const code = uidEl("referralInput").value.trim().toUpperCase();
+  const status = uidEl("referralStatus");
+
+  if(!code){
+    status.innerText="❌ Enter referral code";
+    return;
+  }
+  if(code===myRefCode){
+    status.innerText="❌ You cannot use your own code";
+    return;
+  }
+  if(!code.startsWith("REF") || code.length!==myRefCode.length){
+    status.innerText="❌ Invalid referral code";
+    return;
+  }
+
+  localStorage.refApplied="yes";
+  refs++;
+  localStorage.refs=refs;
+  uidEl("applyBox").style.display="none";
+  status.innerText="✅ Referral Applied Successfully";
+  updateUI();
 }
 
 function saveName(){
